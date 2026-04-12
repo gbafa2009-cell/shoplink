@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ShopLink Admin</title>
@@ -355,8 +361,48 @@ body{font-family:'DM Sans',sans-serif;background:#f5f3f0;color:#1a1614;min-heigh
 
 <script>
 // DATA
-function getData(){try{var d=JSON.parse(localStorage.getItem('shoplink_data'));return d||{categories:[],products:[]};}catch(e){return{categories:[],products:[]};}}
-function setData(d){localStorage.setItem('shoplink_data',JSON.stringify(d));}
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB-TbvFPRKuBNT5SnWKvDjTnBYG7Dp6lDU",
+  authDomain: "affiliate-9d0f7.firebaseapp.com",
+  databaseURL: "https://affiliate-9d0f7-default-rtdb.firebaseio.com",
+  projectId: "affiliate-9d0f7",
+  storageBucket: "affiliate-9d0f7.firebasestorage.app",
+  messagingSenderId: "989805341800",
+  appId: "1:989805341800:web:bfd1a1becd6ef48d9e1fdd",
+  measurementId: "G-S8CKC7ET11"
+};
+
+// Initialize Firebase
+// This turns on the connection
+firebase.initializeApp(firebaseConfig);
+
+// This creates the link to your product database
+const db = firebase.database();
+// NEW CLOUD FUNCTIONS
+  function getData() {
+    db.ref('shop_data').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        window.shoplink_data = data;
+        // This ensures your UI updates immediately
+        if(typeof renderDash === "function") renderDash();
+        if(typeof renderCats === "function") renderCats();
+        if(typeof renderProducts === "function") renderProducts();
+      }
+    });
+  }
+
+  function setData(d) {
+    db.ref('shop_data').set(d);
+  }
 function getCreds(){try{return JSON.parse(localStorage.getItem('shoplink_creds'))||{user:'admin',pass:'admin123'};}catch(e){return{user:'admin',pass:'admin123'};}}
 function getSettings(){try{return JSON.parse(localStorage.getItem('shoplink_settings'))||{};}catch(e){return{};}}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
