@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ShopLink — Affiliate Store</title>
@@ -430,32 +434,26 @@
 
 <script>
 // ── DATA HELPERS ──
-function getData() {
-  try { return JSON.parse(localStorage.getItem('shoplink_data') || 'null'); } catch(e) { return null; }
-}
+
 function getSettings() {
   try { return JSON.parse(localStorage.getItem('shoplink_settings') || '{}'); } catch(e) { return {}; }
 }
 
-// SEED DEMO DATA if empty
-function seedIfEmpty() {
-  if (getData()) return;
-  const demo = {
-    categories: [
-      { id: 'cat1', name: 'Electronics' },
-      { id: 'cat2', name: 'Fashion' },
-      { id: 'cat3', name: 'Home & Living' },
-    ],
-    products: [
-      { id: 'p1', categoryId: 'cat1', name: 'Wireless Earbuds Pro', description: 'Premium noise-cancelling earbuds with 30-hour battery life and crystal-clear sound. Perfect for work, gym, and travel.', price: '$79', image: '', buyMode: 'whatsapp', whatsappNumber: '233596584654', companyUrl: '', featured: true, available: true },
-      { id: 'p2', categoryId: 'cat1', name: 'Smart LED Desk Lamp', description: 'USB-C powered lamp with 5 brightness levels and 3 colour temperatures. Minimalist design fits any workspace.', price: '$45', image: '', buyMode: 'site', whatsappNumber: '', companyUrl: 'https://example.com', featured: false, available: true },
-      { id: 'p3', categoryId: 'cat2', name: 'Classic Leather Wallet', description: 'Full-grain leather bifold with RFID blocking. Slim profile, holds 8 cards plus cash.', price: '$35', image: '', buyMode: 'whatsapp', whatsappNumber: '233596584654', companyUrl: '', featured: true, available: true },
-      { id: 'p4', categoryId: 'cat3', name: 'Ceramic Pour-Over Set', description: 'Handcrafted ceramic dripper and server. Makes the perfect cup every time for the coffee connoisseur.', price: '$55', image: '', buyMode: 'site', whatsappNumber: '', companyUrl: 'https://example.com', featured: false, available: true },
-    ]
-  };
-  localStorage.setItem('shoplink_data', JSON.stringify(demo));
-  localStorage.setItem('shoplink_settings', JSON.stringify({ whatsappNumber: '233596584654' }));
-}
+// --- AFFILIATE STORE CLOUD SYNC ---
+const db = getDatabase(app);
+const shopRef = ref(db, 'shop_data');
+
+onValue(shopRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        // This replaces the old data with your live Cloud data
+        window.shoplink_data = data; 
+        
+        // This refreshes the store instantly
+        if (typeof renderStore === "function") renderStore(); 
+        if (typeof renderCats === "function") renderCats();
+    }
+});
 
 // ── STATE ──
 let currentCat = 'all';
