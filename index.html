@@ -24,52 +24,84 @@
     
     .search-box input { 
         padding: 10px 18px; border-radius: 25px; border: 1px solid var(--border); 
-        outline: none; font-size: 14px; width: 220px; transition: 0.3s;
+        outline: none; font-size: 14px; width: 160px; transition: 0.3s;
         background: #f9f9f9;
     }
-    .search-box input:focus { width: 280px; border-color: var(--accent); background: #fff; }
+    .search-box input:focus { width: 200px; border-color: var(--accent); background: #fff; }
 
     .cat-bar { background: var(--white); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; padding: 15px 0; scrollbar-width: none; }
-    .cat-inner { max-width: 1200px; margin: auto; padding: 0 20px; display: flex; gap: 30px; }
-    .cat-link { text-decoration: none; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; }
+    .cat-inner { max-width: 1200px; margin: auto; padding: 0 20px; display: flex; gap: 20px; }
+    .cat-link { text-decoration: none; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
     .cat-link.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 
-    main { max-width: 1200px; margin: auto; padding: 40px 20px; min-height: 60vh; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 35px; }
+    main { max-width: 1200px; margin: auto; padding: 20px; min-height: 60vh; }
     
-    .card { background: var(--white); border-radius: 15px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.4s ease; }
-    .card:hover { transform: translateY(-8px); box-shadow: var(--shadow); }
-    .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-bottom: 1px solid var(--border); }
+    /* 2 Products per row layout */
+    .grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px; 
+    }
     
-    .card-info { padding: 20px; text-align: center; }
+    /* Rectangular format: Height longer than length */
+    .card { 
+        background: var(--white); 
+        border-radius: 12px; 
+        overflow: hidden; 
+        border: 1px solid var(--border); 
+        cursor: pointer; 
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Aspect ratio 1:1.4 to ensure height > length [cite: 194, 195] */
+    .card img { 
+        width: 100%; 
+        aspect-ratio: 1 / 1.4; 
+        object-fit: cover; 
+        border-bottom: 1px solid var(--border); 
+    }
+    
+    .card-info { padding: 12px; text-align: left; }
+    
     .card-title { 
         font-family: 'Playfair Display', serif; 
-        font-size: 1.25rem; 
-        margin-bottom: 8px; 
+        font-size: 1.1rem; 
+        margin-bottom: 4px; 
         color: var(--ink);
+        font-weight: 700;
+    }
+
+    /* Description with 2-line limit and ellipsis [cite: 197, 198, 199] */
+    .card-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 8px;
         display: -webkit-box;
-        -webkit-line-clamp: 2; /* Safari/Chrome support */
-        line-clamp: 2;         /* Standard property - Fixes Line 66 warning */
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.4;
     }
-    .card-price { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
 
+    .card-price { color: var(--accent); font-weight: 700; font-size: 1rem; }
+
+    /* Modal Styling */
     .modal { position: fixed; inset: 0; background: var(--white); z-index: 1000; display: none; overflow-y: auto; }
     .modal.open { display: block; animation: slideUp 0.4s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-    .carousel { position: relative; width: 100%; max-width: 550px; margin: 0 auto 30px; aspect-ratio: 1/1; box-shadow: var(--shadow); border-radius: 20px; overflow: hidden; }
+    .carousel { position: relative; width: 100%; max-width: 550px; margin: 0 auto 20px; aspect-ratio: 1/1.2; box-shadow: var(--shadow); border-radius: 15px; overflow: hidden; }
     .carousel img { width: 100%; height: 100%; object-fit: cover; }
     
-    .arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
-    .prev { left: 15px; } .next { right: 15px; }
+    .arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+    .prev { left: 10px; } .next { right: 10px; }
 
-    .close-btn { position: absolute; top: 25px; right: 25px; font-size: 32px; cursor: pointer; border: none; background: none; }
-    .buy-btn { width: 100%; padding: 20px; background: var(--ink); color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 16px; }
-    .buy-btn:hover { background: var(--accent); }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; border: none; background: none; z-index: 1001; }
+    .buy-btn { width: 100%; padding: 18px; background: var(--ink); color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 15px; }
 
-    .trust-footer { background: var(--ink); color: #fff; padding: 60px 20px; margin-top: 100px; text-align: center; }
   </style>
 </head>
 <body>
@@ -89,7 +121,7 @@
 
 <div class="modal" id="detailModal">
   <button class="close-btn" onclick="closeModal()">✕</button>
-  <div style="max-width: 850px; margin: 80px auto; padding: 20px;">
+  <div style="max-width: 600px; margin: 60px auto; padding: 20px;">
     <div class="carousel">
       <img id="mImg" src="">
       <button class="arrow prev" onclick="changeImg(-1)">❮</button>
@@ -97,9 +129,9 @@
     </div>
     <div style="text-align: center;">
         <h1 id="mTitle" style="font-family:'Playfair Display'; margin-bottom:10px;"></h1>
-        <h3 id="mPrice" style="color:var(--accent); margin-bottom:25px;"></h3>
-        <p id="mDesc" style="color:var(--muted); margin-bottom:30px;"></p>
-        <div id="mMoreInfo" style="background:#f2efeb; padding:20px; border-radius:12px; margin-bottom:30px; text-align:left;"></div>
+        <h3 id="mPrice" style="color:var(--accent); margin-bottom:20px;"></h3>
+        <p id="mDesc" style="color:var(--muted); margin-bottom:25px; line-height:1.6;"></p>
+        <div id="mMoreInfo" style="background:#f2efeb; padding:15px; border-radius:10px; margin-bottom:25px; text-align:left; font-size: 0.9rem;"></div>
         <button class="buy-btn" onclick="executeBuy()">SECURE PURCHASE INQUIRY</button>
     </div>
   </div>
@@ -139,13 +171,13 @@
   function renderGrid(list) {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = list.map(p => {
-        // Fix for missing images: Check array first, then single string [cite: 131, 57]
         const displayImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
         return `
           <div class="card" onclick="openModal(${p.id})">
             <img src="${displayImg}">
             <div class="card-info">
               <div class="card-title">${p.name}</div>
+              <div class="card-desc">${p.description || ''}</div>
               <div class="card-price">GH₵ ${p.price}</div>
             </div>
           </div>`;
@@ -164,13 +196,13 @@
   }
 
   function updateCarousel() {
-    const imgs = currentProduct.images || [currentProduct.image];
+    const imgs = (currentProduct.images && currentProduct.images.length > 0) ? currentProduct.images : [currentProduct.image];
     document.getElementById('mImg').src = imgs[imgIdx] || '';
     document.querySelectorAll('.arrow').forEach(a => a.style.display = imgs.length > 1 ? 'block' : 'none');
   }
 
   function changeImg(dir) {
-    const imgs = currentProduct.images || [currentProduct.image];
+    const imgs = (currentProduct.images && currentProduct.images.length > 0) ? currentProduct.images : [currentProduct.image];
     imgIdx = (imgIdx + dir + imgs.length) % imgs.length;
     updateCarousel();
   }
@@ -195,4 +227,4 @@
   }
 </script>
 </body>
-</html>
+</html>v
