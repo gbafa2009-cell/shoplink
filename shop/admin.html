@@ -19,43 +19,44 @@
         * { margin:0; padding:0; box-sizing:border-box; transition: all 0.2s ease; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; }
 
-        /* Login UI */
+        /* Login Screen */
         #loginWrap { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--primary); position: fixed; width: 100%; z-index: 2000; top:0; left:0; }
         .loginBox { background: var(--white); padding: 50px 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
         
-        /* Dashboard Header */
+        /* Dashboard Layout */
         .dash-header { text-align: center; padding: 40px 0 20px 0; background: var(--white); }
         .dash-header h1 { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
-        .dash-header p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .dash-header p { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
         
-        /* Black Thin Line Separator */
-        .separator { height: 1px; background: #000; width: 90%; margin: 0 auto; opacity: 0.1; }
+        /* Thin Black Line Separator */
+        .separator { height: 1px; background: #000; width: 90%; margin: 0 auto; opacity: 0.2; }
 
-        /* Tab Navigation */
-        .tab-nav { display: flex; justify-content: center; gap: 40px; background: var(--white); padding: 20px 0; margin-bottom: 30px; }
-        .tab-btn { background: none; border: none; font-weight: 600; font-size: 14px; color: var(--text-muted); cursor: pointer; padding-bottom: 5px; border-bottom: 2px solid transparent; }
+        /* Navigation Tabs */
+        .tab-nav { display: flex; justify-content: center; gap: 40px; background: var(--white); padding: 25px 0; }
+        .tab-btn { background: none; border: none; font-weight: 600; font-size: 14px; color: var(--text-muted); cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
 
-        .main-content { max-width: 1000px; margin: 0 auto; padding: 0 20px 50px 20px; }
+        .main-content { max-width: 1000px; margin: 40px auto; padding: 0 20px 60px 20px; }
         .panel { display: none; }
-        .panel.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .panel.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* UI Components */
+        /* Cards and Form UI */
         .card { background: var(--white); padding: 30px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 25px; }
         .fGroup { margin-bottom: 20px; }
         .fGroup label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-        .fGroup input, .fGroup select, .fGroup textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: #fafafa; font-family: inherit; }
+        .fGroup input, .fGroup select, .fGroup textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: #fafafa; font-family: inherit; font-size: 14px; }
         
-        /* Image Grid for Multiple Uploads */
-        .img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        /* Image Upload Grid */
+        .img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; }
         .img-slot { aspect-ratio: 1; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; background: #fdfdfd; }
-        .img-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .img-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+        .img-slot span { font-size: 20px; color: var(--text-muted); }
 
-        .btnP { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; }
-        
-        /* List Items */
-        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); background: #fff; }
+        .btnP { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .btnP:hover { opacity: 0.9; }
+
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); }
         .del-btn { color: var(--accent); cursor: pointer; font-size: 12px; font-weight: 700; border: none; background: none; }
     </style>
 </head>
@@ -64,7 +65,7 @@
     <div id="loginWrap">
         <div class="loginBox">
             <h1 style="font-family:'Playfair Display'; margin-bottom:30px;">ShopLink <span>Admin</span></h1>
-            <div class="fGroup"><label>Username</label><input type="text" id="lUser" placeholder="admin"></div>
+            <div class="fGroup"><label>Username</label><input type="text" id="lUser" placeholder="Enter username"></div>
             <div class="fGroup"><label>Password</label><input type="password" id="lPass" placeholder="••••••••"></div>
             <button class="btnP" onclick="handleLogin()">Sign In to Dashboard</button>
         </div>
@@ -73,7 +74,7 @@
     <div id="adminContent" style="display:none;">
         <div class="dash-header">
             <h1>Business <span>Management</span></h1>
-            <p>ShopLink Operations Portal</p>
+            <p>Portfolio & Store Operations</p>
         </div>
 
         <div class="separator"></div>
@@ -89,21 +90,20 @@
             
             <div class="panel active" id="p0">
                 <div class="card">
-                    <h3 style="margin-bottom:20px;">Art Collections</h3>
-                    <div id="catListDisplay">Loading Categories...</div>
+                    <h3 style="margin-bottom:20px;">Art Categories</h3>
+                    <div id="catListDisplay">Loading...</div>
                     <div class="fGroup" style="margin-top:20px;">
-                        <input type="text" id="newCatName" placeholder="New Category Name">
+                        <input type="text" id="newCatName" placeholder="New Category Name (e.g. Sculptures)">
                     </div>
-                    <button class="btnP" style="background:#444;" onclick="addCategory()">+ Create Art Category</button>
+                    <button class="btnP" style="background:#444;" onclick="addCategory()">+ Create Category</button>
                 </div>
             </div>
 
             <div class="panel" id="p1">
-                <h2 style="margin-bottom:20px; font-family:'Playfair Display'">Art Products</h2>
                 <div class="card">
-                    <h4>Add Product</h4>
+                    <h3 style="margin-bottom:20px;">Art Products</h3>
                     <div class="fGroup">
-                        <label>Upload Media (Up to 3 Images)</label>
+                        <label>Images (Select up to 3 for carousel)</label>
                         <div class="img-grid">
                             <div class="img-slot" onclick="triggerFile(0)"><span id="p0-plus">+</span><img id="prev0" style="display:none;"></div>
                             <div class="img-slot" onclick="triggerFile(1)"><span id="p1-plus">+</span><img id="prev1" style="display:none;"></div>
@@ -112,45 +112,46 @@
                         <input type="file" id="fileIn" style="display:none;" accept="image/*" onchange="processFile(this)">
                     </div>
                     <div class="fGroup">
-                        <label>Assign Category</label>
-                        <select id="pCatSelect"><option>Loading...</option></select>
+                        <label>Assign to Category</label>
+                        <select id="pCatSelect"></select>
                     </div>
                     <div class="fGroup"><label>Product Name</label><input type="text" id="pName"></div>
                     <div class="fGroup"><label>Price (GH₵)</label><input type="text" id="pPrice"></div>
-                    <div class="fGroup"><label>Description</label><textarea id="pDesc"></textarea></div>
-                    <div class="fGroup"><label>More Info</label><textarea id="pMoreInfo"></textarea></div>
+                    <div class="fGroup"><label>Description</label><textarea id="pDesc" rows="3"></textarea></div>
+                    <div class="fGroup"><label>More Info</label><textarea id="pMoreInfo" rows="2"></textarea></div>
                     <button class="btnP" onclick="saveProduct()">List Art Product</button>
                 </div>
-                
+
                 <div class="card">
-                    <h4>Active Inventory</h4>
+                    <h4 style="margin-bottom:15px;">Product Inventory</h4>
                     <div id="inventoryList"></div>
                 </div>
             </div>
 
             <div class="panel" id="p2">
                 <div class="card">
-                    <h3 style="margin-bottom:20px;">Store Buy Button Config</h3>
-                    <div class="fGroup"><label>WhatsApp Number (Buy Link)</label><input type="text" id="prefWA"></div>
-                    <div class="fGroup"><label>External Store URL</label><input type="text" id="prefURL"></div>
+                    <h3 style="margin-bottom:20px;">Store Buy Button</h3>
+                    <div class="fGroup"><label>WhatsApp Number</label><input type="text" id="prefWA" placeholder="e.g. 233596160395"></div>
+                    <div class="fGroup"><label>Store URL</label><input type="text" id="prefURL" placeholder="https://"></div>
                     <button class="btnP" onclick="savePreferences()">Update Profile for Buy Button</button>
                 </div>
             </div>
 
             <div class="panel" id="p3">
                 <div class="card">
-                    <h3 style="margin-bottom:20px;">Security & Access</h3>
-                    <div class="fGroup"><label>New Username</label><input type="text" id="setUSer"></div>
-                    <div class="fGroup"><label>New Password</label><input type="password" id="setPass"></div>
+                    <h3 style="margin-bottom:20px;">Admin Access</h3>
+                    <div class="fGroup"><label>Change Username</label><input type="text" id="setUSer"></div>
+                    <div class="fGroup"><label>Change Password</label><input type="password" id="setPass"></div>
                     <button class="btnP" onclick="saveSecurity()">Update Admin Credentials</button>
                 </div>
-                <button class="btnP" style="background:var(--accent); margin-top:20px;" onclick="location.reload()">Logout</button>
+                <button class="btnP" style="background:var(--accent); margin-top:10px;" onclick="location.reload()">Logout</button>
             </div>
 
         </div>
     </div>
 
     <script>
+        // CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyB-TbvFPRKuBNT5SnWKvDjTnBYG7Dp6lDU",
             authDomain: "affiliate-9d0f7.firebaseapp.com",
@@ -167,21 +168,21 @@
         let productImages = [null, null, null];
         let currentSlot = 0;
 
-        // Login Logic
+        // Login Handler
         function handleLogin() {
             const u = document.getElementById('lUser').value;
             const p = document.getElementById('lPass').value;
-            
             db.ref('admin_creds').once('value', (s) => {
                 const creds = s.val() || { user: 'admin', pass: 'admin123' };
                 if(u === creds.user && p === creds.pass) {
                     document.getElementById('loginWrap').style.display = 'none';
                     document.getElementById('adminContent').style.display = 'block';
                     loadData();
-                } else { alert("Invalid Credentials"); }
+                } else { alert("Invalid Username or Password."); }
             });
         }
 
+        // Tab Switching
         function showTab(idx, btn) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -189,7 +190,7 @@
             btn.classList.add('active');
         }
 
-        // Image Handling
+        // Image Processing
         function triggerFile(slot) { currentSlot = slot; document.getElementById('fileIn').click(); }
         function processFile(input) {
             if (input.files && input.files[0]) {
@@ -204,6 +205,7 @@
             }
         }
 
+        // Database Sync
         function loadData() {
             db.ref('shop_data').on('value', (s) => {
                 window.shop_data = s.val() || { products: [], categories: [], settings: {} };
@@ -213,23 +215,32 @@
 
         function renderUI() {
             const data = window.shop_data;
-            // Categories List
-            document.getElementById('catListDisplay').innerHTML = (data.categories || []).map(c => `<div class="list-item"><span>${c.name}</span> <button class="del-btn" onclick="deleteItem('categories', ${c.id})">Remove</button></div>`).join('') || "No categories yet.";
             
-            // Category Select Dropdown
-            document.getElementById('pCatSelect').innerHTML = (data.categories || []).map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            // Render Categories
+            document.getElementById('catListDisplay').innerHTML = (data.categories || []).map(c => `
+                <div class="list-item"><span>${c.name}</span><button class="del-btn" onclick="deleteItem('categories', ${c.id})">Remove</button></div>
+            `).join('') || "No categories found.";
             
-            // Inventory
-            document.getElementById('inventoryList').innerHTML = (data.products || []).map(p => `<div class="list-item"><span>${p.name} (${p.category})</span> <button class="del-btn" onclick="deleteItem('products', ${p.id})">Delete</button></div>`).join('') || "Inventory empty.";
-            
-            // Preferences
-            document.getElementById('prefWA').value = data.settings.whatsappNumber || '';
-            document.getElementById('prefURL').value = data.settings.externalUrl || '';
+            document.getElementById('pCatSelect').innerHTML = (data.categories || []).map(c => `
+                <option value="${c.name}">${c.name}</option>
+            `).join('');
+
+            // Render Products
+            document.getElementById('inventoryList').innerHTML = (data.products || []).map(p => `
+                <div class="list-item"><span>${p.name} (${p.category})</span><button class="del-btn" onclick="deleteItem('products', ${p.id})">Delete</button></div>
+            `).join('') || "Inventory is empty.";
+
+            // Render Preferences
+            document.getElementById('prefWA').value = (data.settings && data.settings.whatsappNumber) ? data.settings.whatsappNumber : '';
+            document.getElementById('prefURL').value = (data.settings && data.settings.externalUrl) ? data.settings.externalUrl : '';
         }
 
+        // Save Logic
         function saveProduct() {
             const name = document.getElementById('pName').value;
-            if(!name || !productImages[0]) return alert("Name and at least one image required.");
+            const validImages = productImages.filter(i => i !== null);
+            
+            if(!name || validImages.length === 0) return alert("Product Name and at least 1 image are required.");
             
             const prod = {
                 id: Date.now(),
@@ -238,13 +249,16 @@
                 category: document.getElementById('pCatSelect').value,
                 description: document.getElementById('pDesc').value,
                 moreInfo: document.getElementById('pMoreInfo').value,
-                images: productImages.filter(i => i !== null),
+                images: validImages, // Saved as list for the carousel
                 available: true
             };
 
             if(!window.shop_data.products) window.shop_data.products = [];
             window.shop_data.products.push(prod);
-            db.ref('shop_data').set(window.shop_data).then(() => { alert("Art Product Listed!"); location.reload(); });
+            db.ref('shop_data').set(window.shop_data).then(() => {
+                alert("Product Listed Successfully!");
+                location.reload();
+            });
         }
 
         function addCategory() {
@@ -252,25 +266,30 @@
             if(!name) return;
             if(!window.shop_data.categories) window.shop_data.categories = [];
             window.shop_data.categories.push({ id: Date.now(), name });
-            db.ref('shop_data').set(window.shop_data);
+            db.ref('shop_data').set(window.shop_data).then(() => {
+                document.getElementById('newCatName').value = "";
+            });
         }
 
         function deleteItem(type, id) {
-            window.shop_data[type] = window.shop_data[type].filter(i => i.id !== id);
-            db.ref('shop_data').set(window.shop_data);
+            if(confirm("Are you sure you want to delete this?")) {
+                window.shop_data[type] = window.shop_data[type].filter(i => i.id !== id);
+                db.ref('shop_data').set(window.shop_data);
+            }
         }
 
         function savePreferences() {
+            if(!window.shop_data.settings) window.shop_data.settings = {};
             window.shop_data.settings.whatsappNumber = document.getElementById('prefWA').value;
             window.shop_data.settings.externalUrl = document.getElementById('prefURL').value;
-            db.ref('shop_data').set(window.shop_data).then(() => alert("Preferences Updated"));
+            db.ref('shop_data').set(window.shop_data).then(() => alert("Profile Preferences Updated."));
         }
 
         function saveSecurity() {
             const user = document.getElementById('setUSer').value;
             const pass = document.getElementById('setPass').value;
-            if(!user || !pass) return;
-            db.ref('admin_creds').set({ user, pass }).then(() => alert("Admin Credentials Updated"));
+            if(!user || !pass) return alert("Both fields required.");
+            db.ref('admin_creds').set({ user, pass }).then(() => alert("Login credentials updated successfully."));
         }
     </script>
 </body>
