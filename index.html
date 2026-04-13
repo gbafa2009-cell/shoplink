@@ -3,103 +3,122 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ShopLink — Affiliate Store</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <title>ShopLink | Verified Art Gallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --cream: #faf8f5; --warm-white: #ffffff; --ink: #1a1614; --muted: #6b6560;
-      --border: #e8e3dc; --accent: #c8442a; --accent-light: #fdf1ee;
-      --shadow: 0 2px 16px rgba(26,22,20,0.08);
+      --cream: #faf8f5; --white: #ffffff; --ink: #1a1614; --muted: #6b6560;
+      --border: #e8e3dc; --accent: #c8442a; --shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); }
 
-    /* Centered Header */
-    header { background: var(--warm-white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; padding: 15px 0; }
-    .nav-inner { display: flex; justify-content: center; align-items: center; width: 100%; }
-    .logo { 
-      font-family: 'Playfair Display', serif; 
-      font-weight: 900; 
-      font-size: 1.8rem; 
-      color: var(--ink); 
-      text-decoration: none; 
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+    /* Header & Search */
+    header { background: var(--white); padding: 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .nav-top { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: auto; }
+    .logo { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 1.8rem; text-decoration: none; color: var(--ink); text-transform: uppercase; }
     .logo span { color: var(--accent); }
+    
+    .search-box { position: relative; width: 250px; }
+    .search-box input { width: 100%; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--border); outline: none; font-size: 14px; }
+
+    /* Category Bar */
+    .cat-bar { background: var(--white); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; padding: 15px 0; scrollbar-width: none; }
+    .cat-bar::-webkit-scrollbar { display: none; }
+    .cat-inner { max-width: 1200px; margin: auto; padding: 0 20px; display: flex; gap: 25px; }
+    .cat-link { text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+    .cat-link.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 
     /* Product Grid */
-    main { max-width: 1200px; margin: auto; padding: 40px 24px; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-    .product-card { background: var(--warm-white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: transform 0.3s; }
-    .product-card:hover { transform: translateY(-5px); }
-    .card-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-    .card-body { padding: 15px; text-align: center; }
-    .card-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 5px; }
-    .card-price { font-weight: 600; color: var(--accent); }
+    main { max-width: 1200px; margin: auto; padding: 40px 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+    .card { background: var(--white); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
+    .card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+    .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+    .card-info { padding: 15px; text-align: center; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 5px; }
+    .card-price { color: var(--accent); font-weight: 700; }
 
-    /* Product Detail Page (Modal) */
-    .modal-overlay {
-      position: fixed; inset: 0; background: var(--warm-white); z-index: 1000;
-      display: none; flex-direction: column; overflow-y: auto;
-    }
-    .modal-overlay.open { display: flex; }
-    .detail-container { max-width: 600px; margin: 0 auto; padding: 40px 20px; width: 100%; }
-    .detail-img { width: 100%; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 30px; }
-    .detail-title { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 10px; }
-    .detail-price { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 20px; }
-    .detail-desc { line-height: 1.8; color: var(--muted); margin-bottom: 30px; font-size: 1.05rem; }
-    
-    /* More Info Square */
-    .more-info-box {
-      background: #f2efeb; /* Lightly darker than background */
-      padding: 25px; border-radius: 15px; margin-bottom: 40px;
-    }
-    .more-info-box h4 { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; color: var(--ink); }
-    .more-info-text { font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
+    /* Detail Page & Carousel */
+    .modal { position: fixed; inset: 0; background: var(--white); z-index: 1000; display: none; overflow-y: auto; }
+    .modal.open { display: block; }
+    .carousel { position: relative; width: 100%; max-width: 600px; margin: 0 auto 30px; aspect-ratio: 1/1; }
+    .carousel img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
+    .arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: bold; }
+    .prev { left: 10px; }
+    .next { right: 10px; }
 
-    .buy-btn {
-      width: 100%; padding: 18px; border: none; border-radius: 12px;
-      font-weight: 700; font-size: 1rem; cursor: pointer;
-      background: var(--ink); color: #fff; text-transform: uppercase;
-    }
-    .close-detail { position: fixed; top: 20px; left: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    /* Trust Footer */
+    .trust-footer { background: var(--ink); color: #fff; padding: 60px 20px; margin-top: 80px; text-align: center; }
+    .trust-grid { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto 40px; }
+    .trust-item h4 { color: var(--accent); margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+    .trust-item p { font-size: 13px; opacity: 0.7; max-width: 200px; }
+    .badge { display: inline-block; padding: 5px 15px; border: 1px solid #444; border-radius: 5px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-top: 20px; }
 
-    @media(max-width: 600px) { .detail-title { font-size: 1.5rem; } }
+    .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; border: none; background: none; z-index: 1100; }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="nav-inner">
-    <a href="#" class="logo">Shop<span>Link</span></a>
+  <div class="nav-top">
+    <a href="#" class="logo" onclick="location.reload()">Shop<span>Link</span></a>
+    <div class="search-box">
+      <input type="text" id="searchIn" placeholder="Search products..." oninput="handleFilter()">
+    </div>
   </div>
 </header>
 
-<main>
-  <div class="product-grid" id="productGrid">
+<div class="cat-bar">
+  <div class="cat-inner" id="catNav">
+    <span class="cat-link active" onclick="filterCat('all', this)">All Collections</span>
     </div>
+</div>
+
+<main>
+  <div class="grid" id="productGrid"></div>
 </main>
 
-<div class="modal-overlay" id="detailPage">
-  <button class="close-detail" onclick="closeProduct()">✕</button>
-  <div class="detail-container">
-    <img id="dImg" class="detail-img" src="" alt="">
-    <h1 id="dTitle" class="detail-title"></h1>
-    <div id="dPrice" class="detail-price"></div>
-    <p id="dDesc" class="detail-desc"></p>
-    
-    <div class="more-info-box">
-      <h4>More Info</h4>
-      <div id="dMoreInfo" class="more-info-text">
-        Authentic quality guaranteed. This item is handled with professional care and delivered through our verified logistics partners.
-      </div>
+<div class="modal" id="detailModal">
+  <button class="close-btn" onclick="closeModal()">✕</button>
+  <div style="max-width: 800px; margin: 60px auto; padding: 20px;">
+    <div class="carousel">
+      <img id="mImg" src="">
+      <button class="arrow prev" onclick="changeImg(-1)">❮</button>
+      <button class="arrow next" onclick="changeImg(1)">❯</button>
     </div>
-
-    <button id="dBuyBtn" class="buy-btn" onclick="executeBuy()">Buy Now</button>
+    <h1 id="mTitle" style="font-family:'Playfair Display'; margin-bottom:10px;"></h1>
+    <h3 id="mPrice" style="color:var(--accent); margin-bottom:20px;"></h3>
+    <p id="mDesc" style="line-height:1.6; color:var(--muted); margin-bottom:30px;"></p>
+    
+    <div style="background:#f2efeb; padding:25px; border-radius:15px; margin-bottom:30px;">
+      <h4 style="text-transform:uppercase; font-size:11px; margin-bottom:10px;">More Info</h4>
+      <div id="mMoreInfo" style="font-size:14px; color:var(--muted);"></div>
+    </div>
+    
+    <button id="buyBtn" onclick="executeBuy()" style="width:100%; padding:18px; background:var(--ink); color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer;">BUY NOW</button>
   </div>
 </div>
+
+<footer class="trust-footer">
+  <div class="trust-grid">
+    <div class="trust-item">
+      <h4>Verified Store</h4>
+      <p>Official ShopLink partner. All transactions are logged and protected.</p>
+    </div>
+    <div class="trust-item">
+      <h4>Secure Inquiry</h4>
+      <p>Direct encrypted communication with the merchant for every order.</p>
+    </div>
+    <div class="trust-item">
+      <h4>Authenticity</h4>
+      <p>Every art piece is inspected for quality and description accuracy.</p>
+    </div>
+  </div>
+  <div class="badge">Verified Merchant Portal • SSL Encrypted</div>
+  <p style="margin-top:30px; font-size:11px; opacity:0.4;">&copy; 2026 ShopLink Business. All rights reserved.</p>
+</footer>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -117,50 +136,82 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  let activeProduct = null;
+  
+  let allProds = [];
+  let currentModalItem = null;
+  let currentImgIndex = 0;
 
   db.ref('shop_data').on('value', (snap) => {
     const data = snap.val();
-    const grid = document.getElementById('productGrid');
-    if (!data || !data.products) return;
+    if(!data) return;
+    allProds = data.products || [];
+    window.settings = data.settings || {};
+    
+    // Render Categories
+    const catNav = document.getElementById('catNav');
+    catNav.innerHTML = '<span class="cat-link active" onclick="filterCat(\'all\', this)">All Collections</span>';
+    (data.categories || []).forEach(c => {
+      catNav.innerHTML += `<span class="cat-link" onclick="filterCat('${c.name}', this)">${c.name}</span>`;
+    });
 
-    grid.innerHTML = data.products.map(p => `
-      <div class="product-card" onclick="openProduct(${p.id})">
-        <img class="card-img" src="${p.image}" alt="${p.name}">
-        <div class="card-body">
-          <div class="card-name">${p.name}</div>
+    handleFilter(); 
+  });
+
+  function handleFilter() {
+    const term = document.getElementById('searchIn').value.toLowerCase();
+    const filtered = allProds.filter(p => p.name.toLowerCase().includes(term));
+    renderGrid(filtered);
+  }
+
+  function filterCat(cat, el) {
+    document.querySelectorAll('.cat-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+    const filtered = (cat === 'all') ? allProds : allProds.filter(p => p.category === cat);
+    renderGrid(filtered);
+  }
+
+  function renderGrid(list) {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = list.map(p => `
+      <div class="card" onclick="openModal(${p.id})">
+        <img src="${p.images ? p.images[0] : ''}">
+        <div class="card-info">
+          <div class="card-title">${p.name}</div>
           <div class="card-price">GH₵ ${p.price}</div>
         </div>
       </div>
     `).join('');
+  }
 
-    window.allProducts = data.products;
-    window.waNum = data.settings?.whatsappNumber || '233596160395';
-  });
-
-  function openProduct(id) {
-    const p = window.allProducts.find(item => item.id === id);
-    activeProduct = p;
-    document.getElementById('dImg').src = p.image;
-    document.getElementById('dTitle').textContent = p.name;
-    document.getElementById('dPrice').textContent = `GH₵ ${p.price}`;
-    document.getElementById('dDesc').textContent = p.description || 'No description available.';
-    document.getElementById('detailPage').classList.add('open');
+  function openModal(id) {
+    currentModalItem = allProds.find(p => p.id === id);
+    currentImgIndex = 0;
+    document.getElementById('mTitle').textContent = currentModalItem.name;
+    document.getElementById('mPrice').textContent = `GH₵ ${currentModalItem.price}`;
+    document.getElementById('mDesc').textContent = currentModalItem.description;
+    document.getElementById('mMoreInfo').textContent = currentModalItem.moreInfo || 'No extra information.';
+    updateCarousel();
+    document.getElementById('detailModal').classList.add('open');
     window.scrollTo(0,0);
   }
 
-  function closeProduct() {
-    document.getElementById('detailPage').classList.remove('open');
+  function updateCarousel() {
+    const imgs = currentModalItem.images || [];
+    document.getElementById('mImg').src = imgs[currentImgIndex] || '';
+    document.querySelectorAll('.arrow').forEach(a => a.style.display = imgs.length > 1 ? 'block' : 'none');
   }
 
+  function changeImg(dir) {
+    const imgs = currentModalItem.images || [];
+    currentImgIndex = (currentImgIndex + dir + imgs.length) % imgs.length;
+    updateCarousel();
+  }
+
+  function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+
   function executeBuy() {
-    if (!activeProduct) return;
-    if (activeProduct.buyMode === 'url') {
-      window.open(activeProduct.externalUrl, '_blank');
-    } else {
-      const msg = encodeURIComponent(`Hi! I'm interested in: ${activeProduct.name}\nPrice: GH₵ ${activeProduct.price}`);
-      window.open(`https://wa.me/${window.waNum}?text=${msg}`, '_blank');
-    }
+    const msg = encodeURIComponent(`I want to buy: ${currentModalItem.name}\nPrice: GH₵ ${currentModalItem.price}`);
+    window.open(`https://wa.me/${window.settings.whatsappNumber || '233596160395'}?text=${msg}`, '_blank');
   }
 </script>
 
