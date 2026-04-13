@@ -3,129 +3,115 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>ShopLink Admin</title>
+    <title>ShopLink Admin | Luxury Management</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     <style>
-        :root { --ink: #1a1614; --accent: #c8442a; --bg: #f5f3f0; --white: #ffffff; --border: #e5e0da; }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); height: 100vh; overflow: hidden; }
-        
-        /* Login UI */
-        #loginWrap { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--ink); z-index: 1000; position: fixed; width: 100%; top: 0; left: 0; }
-        .loginBox { background: var(--white); padding: 40px; border-radius: 20px; width: 90%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); text-align: center; }
-        .loginBox h1 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 8px; }
-        .loginBox h1 span { color: var(--accent); }
-        .fGroup { margin-bottom: 15px; text-align: left; }
-        .fGroup label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 5px; }
-        .fGroup input, .fGroup select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; }
-        .btnP { width: 100%; padding: 14px; background: var(--ink); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btnP:hover { background: #3d2a22; }
+        :root {
+            --primary: #1a1614; --accent: #c8442a; --accent-soft: #fdf1ee;
+            --bg: #f8f6f4; --white: #ffffff; --border: #eceae7;
+            --text-main: #2d2926; --text-muted: #8c8581;
+        }
 
-        /* Dashboard Layout */
+        * { margin:0; padding:0; box-sizing:border-box; transition: all 0.25s ease; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); height: 100vh; overflow: hidden; }
+
+        #loginWrap { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at top right, #3d2a22, #1a1614); position: fixed; width: 100%; z-index: 1000; }
+        .loginBox { background: var(--white); padding: 50px 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; }
+        
         #app { display: none; height: 100vh; }
-        .sidebar { width: 260px; background: var(--white); border-right: 1px solid var(--border); padding: 30px 20px; display: flex; flex-direction: column; }
-        .sidebar h2 { font-family: 'Playfair Display', serif; margin-bottom: 40px; }
-        .navBtn { display: block; width: 100%; padding: 12px 15px; text-align: left; background: none; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-weight: 500; color: #666; transition: 0.2s; }
-        .navBtn.active { background: #fdf1ee; color: var(--accent); font-weight: 600; }
-        
-        .main { flex: 1; overflow-y: auto; padding: 40px; background: var(--bg); }
-        .panel { display: none; max-width: 1000px; margin: 0 auto; }
-        .panel.on { display: block; }
+        .sidebar { width: 280px; background: var(--white); border-right: 1px solid var(--border); padding: 40px 24px; display: flex; flex-direction: column; }
+        .sidebar h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 50px; }
+        .navBtn { display: flex; align-items: center; width: 100%; padding: 14px 18px; background: transparent; border: none; border-radius: 14px; margin-bottom: 10px; cursor: pointer; font-weight: 500; color: var(--text-muted); }
+        .navBtn.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 
-        .card { background: white; padding: 25px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .img-slot { width: 100px; height: 100px; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafafa; margin-bottom: 10px; }
-        .img-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .main { flex: 1; overflow-y: auto; padding: 60px; }
+        .panel { display: none; opacity: 0; transform: translateY(10px); }
+        .panel.on { display: block; opacity: 1; transform: translateY(0); }
+        
+        .card { background: var(--white); padding: 35px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 30px; }
+        .fGroup { margin-bottom: 20px; }
+        .fGroup label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+        .fGroup input, .fGroup select, .fGroup textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: #fafafa; font-family: inherit; font-size: 14px; }
+        .fGroup textarea { height: 80px; resize: none; }
+
+        .img-slot { width: 100%; height: 180px; border: 2px dashed var(--border); border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+        .img-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+        
+        .btnP { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="loginWrap">
         <div class="loginBox">
-            <h1>ShopLink <span>Admin</span></h1>
-            <p style="color:#888; margin-bottom:25px; font-size:14px;">Secure Management Portal</p>
-            <div class="fGroup"><label>Password</label><input type="password" id="lp" placeholder="••••••••"></div>
-            <button class="btnP" onclick="login()">Sign In</button>
+            <h1 style="font-family:'Playfair Display'">ShopLink <span>Admin</span></h1>
+            <div class="fGroup" style="margin-top:20px;"><input type="password" id="lp" placeholder="Security Password"></div>
+            <button class="btnP" onclick="login()">Enter Dashboard</button>
         </div>
     </div>
 
     <div id="app">
         <div class="sidebar">
             <h2>ShopLink</h2>
-            <button class="navBtn active" id="nb-dashboard" onclick="go('dashboard')">Dashboard</button>
-            <button class="navBtn" id="nb-categories" onclick="go('categories')">Categories</button>
-            <button class="navBtn" id="nb-products" onclick="go('products')">Products</button>
-            <button class="navBtn" id="nb-featured" onclick="go('featured')">Featured</button>
-            <button class="navBtn" id="nb-settings" onclick="go('settings')">Settings</button>
-            <div style="margin-top:auto;"><button class="navBtn" onclick="location.reload()" style="color:var(--accent)">Logout</button></div>
+            <button class="navBtn active" id="nb-dashboard" onclick="go('dashboard')">Overview</button>
+            <button class="navBtn" id="nb-products" onclick="go('products')">Inventory</button>
+            <button class="navBtn" id="nb-settings" onclick="go('settings')">Preferences</button>
+            <div style="margin-top:auto;"><button class="navBtn" onclick="location.reload()" style="color:var(--accent)">Log out</button></div>
         </div>
 
         <div class="main">
-            <h1 id="pageTitle" style="margin-bottom:30px; font-family:'Playfair Display',serif;">Dashboard</h1>
-            
             <div id="p-dashboard" class="panel on">
+                <h1 style="font-family:'Playfair Display'; font-size:36px; margin-bottom:40px;">Portfolio Overview</h1>
                 <div class="card" id="statsRow">Loading metrics...</div>
-                <div class="card">
-                    <h3>Recent Inquiries</h3>
-                    <p style="color:#888; margin-top:10px;">Connect to your store to see activity.</p>
-                </div>
             </div>
 
             <div id="p-products" class="panel">
+                <h1 style="font-family:'Playfair Display'; font-size:36px; margin-bottom:40px;">New Addition</h1>
                 <div class="card">
-                    <h3>Add New Product</h3>
-                    <div class="fGroup" style="margin-top:15px;">
+                    <div class="fGroup">
+                        <label>Display Imagery</label>
                         <div class="img-slot" onclick="document.getElementById('fileIn').click()">
-                            <span id="imgPlaceholder">Click Photo</span>
+                            <span id="imgPlaceholder" style="font-size:14px; color:var(--text-muted);">+ Upload Product Media</span>
                             <img id="imgPreview" style="display:none;">
                         </div>
                         <input type="file" id="fileIn" style="display:none;" accept="image/*" onchange="handleFile(this)">
                     </div>
-                    <div class="fGroup"><label>Product Name</label><input type="text" id="pName"></div>
-                    <div class="fGroup"><label>Price (GH₵)</label><input type="text" id="pPrice"></div>
-                    <div class="fGroup">
-                        <label>Category</label>
-                        <select id="pCat"><option value="">Select Category</option></select>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="fGroup"><label>Product Name</label><input type="text" id="pName" placeholder="Classic Timepiece"></div>
+                        <div class="fGroup"><label>Value (GH₵)</label><input type="text" id="pPrice" placeholder="0.00"></div>
                     </div>
+                    
                     <div class="fGroup">
-                        <label>Buy Mode</label>
-                        <select id="pBuyMode" onchange="toggleUrlField()">
-                            <option value="whatsapp">WhatsApp Chat</option>
-                            <option value="url">External Link (URL)</option>
+                        <label>Short Description (Main Page)</label>
+                        <textarea id="pDesc" placeholder="Brief overview of the product..."></textarea>
+                    </div>
+
+                    <div class="fGroup">
+                        <label>More Info (Detail Box)</label>
+                        <textarea id="pMoreInfo" placeholder="Add technical specs, shipping info, or material details..."></textarea>
+                    </div>
+
+                    <div class="fGroup">
+                        <label>Direct Customers To</label>
+                        <select id="pBuyMode" onchange="toggleUrl()">
+                            <option value="whatsapp">Personal WhatsApp Chat</option>
+                            <option value="url">External Boutique Link</option>
                         </select>
                     </div>
-                    <div class="fGroup" id="urlField" style="display:none;">
-                        <label>Product Link (URL)</label>
-                        <input type="text" id="pUrl" placeholder="https://...">
-                    </div>
-                    <button class="btnP" onclick="saveProduct()">Save Product</button>
-                </div>
-            </div>
-
-            <div id="p-categories" class="panel">
-                <div class="card">
-                    <h3>Create Category</h3>
-                    <div class="fGroup"><label>Category Name</label><input type="text" id="catName" placeholder="e.g., Electronics"></div>
-                    <button class="btnP" onclick="saveCategory()">Add Category</button>
-                </div>
-                <div class="card" id="catList"></div>
-            </div>
-
-            <div id="p-featured" class="panel">
-                <div class="card">
-                    <h3>Hot Picks / Featured Items</h3>
-                    <p style="color:#666;">Pinned products appear at the top of your store.</p>
+                    <div class="fGroup" id="urlField" style="display:none;"><label>External Destination</label><input type="text" id="pUrl" placeholder="https://..."></div>
+                    <button class="btnP" onclick="saveProduct()">Curate Product</button>
                 </div>
             </div>
 
             <div id="p-settings" class="panel">
+                <h1 style="font-family:'Playfair Display'; font-size:36px; margin-bottom:40px;">Preferences</h1>
                 <div class="card">
-                    <h3>Store Configuration</h3>
-                    <div class="fGroup"><label>Your WhatsApp Number</label><input type="text" id="waNum" value="233596160395"></div>
-                    <button class="btnP" onclick="saveSettings()">Save Settings</button>
+                    <div class="fGroup"><label>Business WhatsApp Number</label><input type="text" id="waNum" value="233596160395"></div>
+                    <button class="btnP" onclick="saveSettings()">Update Profile</button>
                 </div>
             </div>
         </div>
@@ -151,7 +137,7 @@
                 document.getElementById('loginWrap').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 initData();
-            } else { alert("Incorrect password"); }
+            } else { alert("Access Denied."); }
         }
 
         function go(name) {
@@ -159,12 +145,10 @@
             document.querySelectorAll('.navBtn').forEach(b => b.classList.remove('active'));
             document.getElementById('p-'+name).classList.add('on');
             document.getElementById('nb-'+name).classList.add('active');
-            document.getElementById('pageTitle').textContent = name.charAt(0).toUpperCase() + name.slice(1);
         }
 
-        function toggleUrlField() {
-            const mode = document.getElementById('pBuyMode').value;
-            document.getElementById('urlField').style.display = mode === 'url' ? 'block' : 'none';
+        function toggleUrl() {
+            document.getElementById('urlField').style.display = document.getElementById('pBuyMode').value === 'url' ? 'block' : 'none';
         }
 
         function handleFile(input) {
@@ -182,62 +166,41 @@
 
         function initData() {
             db.ref('shop_data').on('value', (snap) => {
-                window.shop_data = snap.val() || { products: [], categories: [], settings: { whatsappNumber: '233596160395' } };
-                renderStats();
-                renderCats();
+                window.shop_data = snap.val() || { products: [], settings: { whatsappNumber: '233596160395' } };
+                document.getElementById('statsRow').innerHTML = `<h3>Inventory: ${window.shop_data.products ? window.shop_data.products.length : 0} Products</h3>`;
             });
         }
 
         function saveProduct() {
             const name = document.getElementById('pName').value;
             const price = document.getElementById('pPrice').value;
-            const category = document.getElementById('pCat').value;
-            const buyMode = document.getElementById('pBuyMode').value;
-            const externalUrl = document.getElementById('pUrl').value;
+            const desc = document.getElementById('pDesc').value;
+            const moreInfo = document.getElementById('pMoreInfo').value; // Get More Info
+            
+            if(!name || !currentImg) return alert("Product name and image are required.");
 
-            if(!name || !currentImg) return alert("Missing name or image.");
-
-            const prod = { id: Date.now(), name, price, category, image: currentImg, buyMode, externalUrl: buyMode === 'url' ? externalUrl : '', available: true };
+            const prod = { 
+                id: Date.now(), 
+                name, 
+                price, 
+                description: desc, 
+                moreInfo: moreInfo, // Save More Info
+                image: currentImg, 
+                buyMode: document.getElementById('pBuyMode').value, 
+                externalUrl: document.getElementById('pUrl').value, 
+                available: true 
+            };
+            
             if(!window.shop_data.products) window.shop_data.products = [];
             window.shop_data.products.push(prod);
-
-            db.ref('shop_data').set(window.shop_data).then(() => {
-                alert("Product Added!");
-                location.reload();
-            });
-        }
-
-        function saveCategory() {
-            const name = document.getElementById('catName').value;
-            if(!name) return;
-            if(!window.shop_data.categories) window.shop_data.categories = [];
-            window.shop_data.categories.push({ id: Date.now(), name });
-            db.ref('shop_data').set(window.shop_data).then(() => {
-                document.getElementById('catName').value = "";
-                alert("Category Added!");
-            });
-        }
-
-        function renderStats() {
-            const pCount = window.shop_data.products ? window.shop_data.products.length : 0;
-            const cCount = window.shop_data.categories ? window.shop_data.categories.length : 0;
-            document.getElementById('statsRow').innerHTML = `<h3>Active Inventory: ${pCount} Products | ${cCount} Categories</h3>`;
-        }
-
-        function renderCats() {
-            const list = document.getElementById('catList');
-            const select = document.getElementById('pCat');
-            const cats = window.shop_data.categories || [];
-            
-            list.innerHTML = cats.map(c => `<div style="padding:10px; border-bottom:1px solid #eee;">${c.name}</div>`).join('');
-            select.innerHTML = '<option value="">Select Category</option>' + cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            db.ref('shop_data').set(window.shop_data).then(() => { alert("Product Saved Successfully."); location.reload(); });
         }
 
         function saveSettings() {
             const num = document.getElementById('waNum').value;
             if(!window.shop_data.settings) window.shop_data.settings = {};
             window.shop_data.settings.whatsappNumber = num;
-            db.ref('shop_data').set(window.shop_data).then(() => alert("Settings Saved!"));
+            db.ref('shop_data').set(window.shop_data).then(() => alert("Profile Settings Updated."));
         }
     </script>
 </body>

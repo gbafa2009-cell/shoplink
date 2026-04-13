@@ -1,175 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ShopLink — Official Store</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  
+  <title>ShopLink — Affiliate Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --cream: #faf8f5;
-      --ink: #1a1614;
-      --muted: #6b6560;
-      --border: #e8e3dc;
-      --accent: #c8442a;
+      --cream: #faf8f5; --warm-white: #ffffff; --ink: #1a1614; --muted: #6b6560;
+      --border: #e8e3dc; --accent: #c8442a; --accent-light: #fdf1ee;
+      --shadow: 0 2px 16px rgba(26,22,20,0.08);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.6; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); }
 
-    /* Header */
-    header { background: #fff; border-bottom: 1px solid var(--border); padding: 20px 5%; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--ink); text-decoration: none; }
-    
-    /* Categories Bar */
-    .cat-nav { display: flex; gap: 15px; overflow-x: auto; padding: 15px 5%; background: #fff; border-bottom: 1px solid var(--border); scrollbar-width: none; }
-    .cat-pill { padding: 8px 18px; background: #fff; border: 1px solid var(--border); border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 14px; transition: 0.3s; }
-    .cat-pill.active { background: var(--ink); color: #fff; border-color: var(--ink); }
-
-    /* Hero */
-    .hero { padding: 60px 5%; text-align: center; }
-    .hero h1 { font-family: 'Playfair Display', serif; font-size: 42px; margin-bottom: 10px; }
+    /* Centered Header */
+    header { background: var(--warm-white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; padding: 15px 0; }
+    .nav-inner { display: flex; justify-content: center; align-items: center; width: 100%; }
+    .logo { 
+      font-family: 'Playfair Display', serif; 
+      font-weight: 900; 
+      font-size: 1.8rem; 
+      color: var(--ink); 
+      text-decoration: none; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .logo span { color: var(--accent); }
 
     /* Product Grid */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 0 5% 60px; }
-    .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    .img-wrap { width: 100%; aspect-ratio: 1/1; background: #eee; overflow: hidden; }
-    .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    main { max-width: 1200px; margin: auto; padding: 40px 24px; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+    .product-card { background: var(--warm-white); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: transform 0.3s; }
+    .product-card:hover { transform: translateY(-5px); }
+    .card-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+    .card-body { padding: 15px; text-align: center; }
+    .card-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 5px; }
+    .card-price { font-weight: 600; color: var(--accent); }
+
+    /* Product Detail Page (Modal) */
+    .modal-overlay {
+      position: fixed; inset: 0; background: var(--warm-white); z-index: 1000;
+      display: none; flex-direction: column; overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .detail-container { max-width: 600px; margin: 0 auto; padding: 40px 20px; width: 100%; }
+    .detail-img { width: 100%; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 30px; }
+    .detail-title { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 10px; }
+    .detail-price { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 20px; }
+    .detail-desc { line-height: 1.8; color: var(--muted); margin-bottom: 30px; font-size: 1.05rem; }
     
-    .card-info { padding: 20px; }
-    .card-cat { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 5px; }
-    .card-title { font-size: 18px; margin-bottom: 10px; font-weight: 600; }
-    .card-price { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 15px; }
+    /* More Info Square */
+    .more-info-box {
+      background: #f2efeb; /* Lightly darker than background */
+      padding: 25px; border-radius: 15px; margin-bottom: 40px;
+    }
+    .more-info-box h4 { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; color: var(--ink); }
+    .more-info-text { font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
 
-    /* Buttons */
-    .btn { display: block; width: 100%; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; font-weight: 600; transition: 0.3s; border: none; cursor: pointer; }
-    .btn-wa { background: #25d366; color: #fff; }
-    .btn-wa:hover { background: #1eb954; }
-    .btn-site { background: var(--ink); color: #fff; }
-    .btn-site:hover { background: #3d342f; }
+    .buy-btn {
+      width: 100%; padding: 18px; border: none; border-radius: 12px;
+      font-weight: 700; font-size: 1rem; cursor: pointer;
+      background: var(--ink); color: #fff; text-transform: uppercase;
+    }
+    .close-detail { position: fixed; top: 20px; left: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
 
-    .feat-badge { position: absolute; top: 15px; right: 15px; background: var(--accent); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-
-    /* Empty State */
-    .empty { grid-column: 1/-1; text-align: center; padding: 100px 0; color: var(--muted); }
+    @media(max-width: 600px) { .detail-title { font-size: 1.5rem; } }
   </style>
 </head>
 <body>
 
-  <header>
-    <a href="#" class="logo">ShopLink</a>
-    <div id="cartCount" style="font-weight: 500;">Welcome</div>
-  </header>
-
-  <div class="cat-nav" id="catNav">
-    <div class="cat-pill active" onclick="filterCat('all')">All Products</div>
+<header>
+  <div class="nav-inner">
+    <a href="#" class="logo">Shop<span>Link</span></a>
   </div>
+</header>
 
-  <section class="hero">
-    <h1 id="heroTitle">Curated Collections</h1>
-    <p>Premium items selected for quality and style.</p>
-  </section>
+<main>
+  <div class="product-grid" id="productGrid">
+    </div>
+</main>
 
-  <div class="grid" id="productGrid">
-    <div class="empty">Loading products...</div>
+<div class="modal-overlay" id="detailPage">
+  <button class="close-detail" onclick="closeProduct()">✕</button>
+  <div class="detail-container">
+    <img id="dImg" class="detail-img" src="" alt="">
+    <h1 id="dTitle" class="detail-title"></h1>
+    <div id="dPrice" class="detail-price"></div>
+    <p id="dDesc" class="detail-desc"></p>
+    
+    <div class="more-info-box">
+      <h4>More Info</h4>
+      <div id="dMoreInfo" class="more-info-text">
+        Authentic quality guaranteed. This item is handled with professional care and delivered through our verified logistics partners.
+      </div>
+    </div>
+
+    <button id="dBuyBtn" class="buy-btn" onclick="executeBuy()">Buy Now</button>
   </div>
+</div>
 
-  <script>
-    // 1. FIREBASE CONFIG (Must match your Admin)
-    const firebaseConfig = { 
-      apiKey: "AIzaSyB-TbvFPRKuBNT5SnWKvDjTnBYG7Dp6lDU", 
-      authDomain: "affiliate-9d0f7.firebaseapp.com", 
-      databaseURL: "https://affiliate-9d0f7-default-rtdb.firebaseio.com", 
-      projectId: "affiliate-9d0f7", 
-      storageBucket: "affiliate-9d0f7.firebasestorage.app", 
-      messagingSenderId: "989805341800", 
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+      apiKey: "AIzaSyB-TbvFPRKuBNT5SnWKvDjTnBYG7Dp6lDU",
+      authDomain: "affiliate-9d0f7.firebaseapp.com",
+      databaseURL: "https://affiliate-9d0f7-default-rtdb.firebaseio.com",
+      projectId: "affiliate-9d0f7",
+      storageBucket: "affiliate-9d0f7.firebasestorage.app",
+      messagingSenderId: "989805341800",
       appId: "1:989805341800:web:bfd1a1becd6ef48d9e1fdd"
-    };
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  let activeProduct = null;
 
-    let allProducts = [];
-    let currentCat = 'all';
+  db.ref('shop_data').on('value', (snap) => {
+    const data = snap.val();
+    const grid = document.getElementById('productGrid');
+    if (!data || !data.products) return;
 
-    // 2. FETCH DATA
-    function init() {
-      db.ref('shop_data').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          allProducts = data.products || [];
-          renderCategories(data.categories || []);
-          renderProducts();
-        } else {
-          document.getElementById('productGrid').innerHTML = '<div class="empty">No products available.</div>';
-        }
-      });
+    grid.innerHTML = data.products.map(p => `
+      <div class="product-card" onclick="openProduct(${p.id})">
+        <img class="card-img" src="${p.image}" alt="${p.name}">
+        <div class="card-body">
+          <div class="card-name">${p.name}</div>
+          <div class="card-price">GH₵ ${p.price}</div>
+        </div>
+      </div>
+    `).join('');
+
+    window.allProducts = data.products;
+    window.waNum = data.settings?.whatsappNumber || '233596160395';
+  });
+
+  function openProduct(id) {
+    const p = window.allProducts.find(item => item.id === id);
+    activeProduct = p;
+    document.getElementById('dImg').src = p.image;
+    document.getElementById('dTitle').textContent = p.name;
+    document.getElementById('dPrice').textContent = `GH₵ ${p.price}`;
+    document.getElementById('dDesc').textContent = p.description || 'No description available.';
+    document.getElementById('detailPage').classList.add('open');
+    window.scrollTo(0,0);
+  }
+
+  function closeProduct() {
+    document.getElementById('detailPage').classList.remove('open');
+  }
+
+  function executeBuy() {
+    if (!activeProduct) return;
+    if (activeProduct.buyMode === 'url') {
+      window.open(activeProduct.externalUrl, '_blank');
+    } else {
+      const msg = encodeURIComponent(`Hi! I'm interested in: ${activeProduct.name}\nPrice: GH₵ ${activeProduct.price}`);
+      window.open(`https://wa.me/${window.waNum}?text=${msg}`, '_blank');
     }
+  }
+</script>
 
-    // 3. RENDER CATEGORIES
-    function renderCategories(cats) {
-      const nav = document.getElementById('catNav');
-      nav.innerHTML = `<div class="cat-pill ${currentCat === 'all' ? 'active' : ''}" onclick="filterCat('all')">All Products</div>`;
-      
-      cats.forEach(c => {
-        nav.innerHTML += `
-          <div class="cat-pill ${currentCat === c.id ? 'active' : ''}" onclick="filterCat('${c.id}')">
-            ${c.icon || ''} ${c.name}
-          </div>`;
-      });
-    }
-
-    function filterCat(id) {
-      currentCat = id;
-      // Refresh UI
-      renderProducts();
-      // Highlight pill
-      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-      event.target.classList.add('active');
-    }
-
-    // 4. RENDER PRODUCTS
-    function renderProducts() {
-      const grid = document.getElementById('productGrid');
-      let filtered = allProducts.filter(p => p.available); // Only show active products
-
-      if (currentCat !== 'all') {
-        filtered = filtered.filter(p => p.categoryId === currentCat);
-      }
-
-      if (filtered.length === 0) {
-        grid.innerHTML = '<div class="empty">No products found in this category.</div>';
-        return;
-      }
-
-      grid.innerHTML = filtered.map(p => {
-        const buyBtn = p.buyMode === 'whatsapp' 
-          ? `<a href="https://wa.me/233596000000?text=I'm interested in ${encodeURIComponent(p.name)}" target="_blank" class="btn btn-wa">Order via WhatsApp</a>`
-          : `<a href="${p.affiliateLink || '#'}" target="_blank" class="btn btn-site">View on Website</a>`;
-
-        return `
-          <div class="card">
-            ${p.featured ? '<div class="feat-badge">HOT</div>' : ''}
-            <div class="img-wrap">
-              <img src="${p.imageUrl || 'https://via.placeholder.com/400'}" alt="${p.name}">
-            </div>
-            <div class="card-info">
-              <div class="card-cat">${p.categoryName || 'General'}</div>
-              <div class="card-title">${p.name}</div>
-              <div class="card-price">${p.price}</div>
-              ${buyBtn}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    init();
-  </script>
 </body>
 </html>
