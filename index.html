@@ -1,117 +1,175 @@
-<script>
-// 1. FIREBASE CONFIGURATION
-// Using the config found in your document
-const firebaseConfig = { 
-  apiKey: "AIzaSyB-TbvFPRKuBNT5SnWKvDjTnBYG7Dp6lDU", 
-  authDomain: "affiliate-9d0f7.firebaseapp.com", 
-  databaseURL: "https://affiliate-9d0f7-default-rtdb.firebaseio.com", 
-  projectId: "affiliate-9d0f7", 
-  storageBucket: "affiliate-9d0f7.firebasestorage.app", 
-  messagingSenderId: "989805341800", 
-  appId: "1:989805341800:web:bfd1a1becd6ef48d9e1fdd", 
-  measurementId: "G-S8CKC7ET11" 
-};
-
-// 2. INITIALIZE FIREBASE (Version 8)
-// This uses the scripts loaded at the top of your file [cite: 699, 700]
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// 3. GLOBAL DATA LISTENER
-function getData() { 
-  db.ref('shop_data').on('value', (snapshot) => { 
-    const data = snapshot.val(); 
-    if (data) { 
-      window.shoplink_data = data; 
-      // Refresh UI automatically if dashboard is open
-      if(document.getElementById('app').classList.contains('app-visible')) {
-          renderDash(); 
-          if(typeof renderCats === "function") renderCats(); 
-          if(typeof renderProducts === "function") renderProducts(); 
-      }
-    } else {
-      window.shoplink_data = {categories:[], products:[]};
-    }
-  });
-}
-
-// 4. AUTHENTICATION & UTILITIES
-function setData(d) { db.ref('shop_data').set(d); }
-
-function getCreds(){
-  try{return JSON.parse(localStorage.getItem('shoplink_creds'))||{user:'admin',pass:'admin123'};}
-  catch(e){return{user:'admin',pass:'admin123'};}
-}
-
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-function login(){ 
-  var u=document.getElementById('lu').value.trim(); 
-  var p=document.getElementById('lp').value; 
-  var c=getCreds(); 
-  if(u===c.user && p===c.pass){ 
-    document.getElementById('loginWrap').style.display='none'; 
-    document.getElementById('app').classList.add('app-visible'); 
-    document.getElementById('whoami').textContent=u; 
-    go('dashboard'); 
-  } else { 
-    document.getElementById('lerr').style.display='block';
-  } 
-}
-
-function logout(){ 
-  document.getElementById('app').classList.remove('app-visible'); 
-  document.getElementById('loginWrap').style.display='flex'; 
-  document.getElementById('lp').value=''; 
-  document.getElementById('lerr').style.display='none'; 
-}
-
-// 5. NAVIGATION
-var PANELS=['dashboard','categories','products','featured','sold','settings'];
-var TITLES={dashboard:'Dashboard',categories:'Categories',products:'Products',featured:'Hot Deals / Featured',sold:'Sold / Removed',settings:'Settings'};
-
-function go(name){ 
-  PANELS.forEach(function(n){ 
-    var p=document.getElementById('p-'+n); 
-    var b=document.getElementById('nb-'+n); 
-    if(p){p.className=n===name?'panel on':'panel';} 
-    if(b){b.className=n===name?'navBtn on':'navBtn';} 
-  });
-  var t=document.getElementById('pageTitle'); 
-  if(t)t.textContent=TITLES[name]||name; 
-  if(name==='dashboard') renderDash();
-  // Call other specific render functions here as needed
-}
-
-// 6. DASHBOARD RENDERING (FIXED)
-function renderDash(){ 
-  // Use the global data directly instead of calling getData() 
-  var d = window.shoplink_data || {products:[], categories:[]}; 
-  var prods=d.products||[];
-  var cats=d.categories||[]; 
-  var active=prods.filter(function(p){return p.available;}); 
-  var feat=prods.filter(function(p){return p.featured&&p.available;}); 
-  var sold=prods.filter(function(p){return !p.available;}); 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   
-  var sr=document.getElementById('statsRow');
-  if(sr)sr.innerHTML= 
-    mkStat(' 📦 ','Total Products',prods.length)+ 
-    mkStat(' ✅ ','Active',active.length)+ 
-    mkStat(' 🗂 ','Categories',cats.length)+ 
-    mkStat(' 🔥 ','Hot Deals',feat.length)+ 
-    mkStat(' 🛒 ','Sold',sold.length);
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopLink — Official Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  
+  <style>
+    :root {
+      --cream: #faf8f5;
+      --ink: #1a1614;
+      --muted: #6b6560;
+      --border: #e8e3dc;
+      --accent: #c8442a;
+    }
 
-  var recent=active.slice(-5).reverse(); 
-  var dbBody=document.getElementById('dashBody'); 
-  if(dbBody)dbBody.innerHTML=recent.length?recent.map(function(p){ 
-    var cat=cats.find(function(c){return c.id===p.categoryId;}); 
-    return '<tr><td><strong>'+esc(p.name)+'</strong></td><td><span class="pill pill-cat">'+(cat?(esc(cat.icon||'')+' '+esc(cat.name)):'—')+'</span></td><td>'+esc(p.price||'—')+'</td><td>'+(p.buyMode==='whatsapp'?'<span class="pill pill-wa"> 💬 WhatsApp</span>':'<span class="pill pill-site"> 🔗 Website</span>')+'</td></tr>'; 
-  }).join(''):'<tr class="empty"><td colspan="4">No products yet</td></tr>';
-}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.6; }
 
-function mkStat(ico,lbl,val){return '<div class="statBox"><div class="ico">'+ico+'</div><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div></div>';}
+    /* Header */
+    header { background: #fff; border-bottom: 1px solid var(--border); padding: 20px 5%; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--ink); text-decoration: none; }
+    
+    /* Categories Bar */
+    .cat-nav { display: flex; gap: 15px; overflow-x: auto; padding: 15px 5%; background: #fff; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+    .cat-pill { padding: 8px 18px; background: #fff; border: 1px solid var(--border); border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 14px; transition: 0.3s; }
+    .cat-pill.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
-// 7. INITIALIZE LISTENER ON LOAD
-getData();
-</script>
+    /* Hero */
+    .hero { padding: 60px 5%; text-align: center; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: 42px; margin-bottom: 10px; }
+
+    /* Product Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 0 5% 60px; }
+    .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .img-wrap { width: 100%; aspect-ratio: 1/1; background: #eee; overflow: hidden; }
+    .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .card-info { padding: 20px; }
+    .card-cat { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 5px; }
+    .card-title { font-size: 18px; margin-bottom: 10px; font-weight: 600; }
+    .card-price { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 15px; }
+
+    /* Buttons */
+    .btn { display: block; width: 100%; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; font-weight: 600; transition: 0.3s; border: none; cursor: pointer; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .btn-wa:hover { background: #1eb954; }
+    .btn-site { background: var(--ink); color: #fff; }
+    .btn-site:hover { background: #3d342f; }
+
+    .feat-badge { position: absolute; top: 15px; right: 15px; background: var(--accent); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+
+    /* Empty State */
+    .empty { grid-column: 1/-1; text-align: center; padding: 100px 0; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="#" class="logo">ShopLink</a>
+    <div id="cartCount" style="font-weight: 500;">Welcome</div>
+  </header>
+
+  <div class="cat-nav" id="catNav">
+    <div class="cat-pill active" onclick="filterCat('all')">All Products</div>
+  </div>
+
+  <section class="hero">
+    <h1 id="heroTitle">Curated Collections</h1>
+    <p>Premium items selected for quality and style.</p>
+  </section>
+
+  <div class="grid" id="productGrid">
+    <div class="empty">Loading products...</div>
+  </div>
+
+  <script>
+    // 1. FIREBASE CONFIG (Must match your Admin)
+    const firebaseConfig = { 
+      apiKey: "AIzaSyB-TbvFPRKuBNT5SnWKvDjTnBYG7Dp6lDU", 
+      authDomain: "affiliate-9d0f7.firebaseapp.com", 
+      databaseURL: "https://affiliate-9d0f7-default-rtdb.firebaseio.com", 
+      projectId: "affiliate-9d0f7", 
+      storageBucket: "affiliate-9d0f7.firebasestorage.app", 
+      messagingSenderId: "989805341800", 
+      appId: "1:989805341800:web:bfd1a1becd6ef48d9e1fdd"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let allProducts = [];
+    let currentCat = 'all';
+
+    // 2. FETCH DATA
+    function init() {
+      db.ref('shop_data').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          allProducts = data.products || [];
+          renderCategories(data.categories || []);
+          renderProducts();
+        } else {
+          document.getElementById('productGrid').innerHTML = '<div class="empty">No products available.</div>';
+        }
+      });
+    }
+
+    // 3. RENDER CATEGORIES
+    function renderCategories(cats) {
+      const nav = document.getElementById('catNav');
+      nav.innerHTML = `<div class="cat-pill ${currentCat === 'all' ? 'active' : ''}" onclick="filterCat('all')">All Products</div>`;
+      
+      cats.forEach(c => {
+        nav.innerHTML += `
+          <div class="cat-pill ${currentCat === c.id ? 'active' : ''}" onclick="filterCat('${c.id}')">
+            ${c.icon || ''} ${c.name}
+          </div>`;
+      });
+    }
+
+    function filterCat(id) {
+      currentCat = id;
+      // Refresh UI
+      renderProducts();
+      // Highlight pill
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    // 4. RENDER PRODUCTS
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      let filtered = allProducts.filter(p => p.available); // Only show active products
+
+      if (currentCat !== 'all') {
+        filtered = filtered.filter(p => p.categoryId === currentCat);
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty">No products found in this category.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const buyBtn = p.buyMode === 'whatsapp' 
+          ? `<a href="https://wa.me/233596000000?text=I'm interested in ${encodeURIComponent(p.name)}" target="_blank" class="btn btn-wa">Order via WhatsApp</a>`
+          : `<a href="${p.affiliateLink || '#'}" target="_blank" class="btn btn-site">View on Website</a>`;
+
+        return `
+          <div class="card">
+            ${p.featured ? '<div class="feat-badge">HOT</div>' : ''}
+            <div class="img-wrap">
+              <img src="${p.imageUrl || 'https://via.placeholder.com/400'}" alt="${p.name}">
+            </div>
+            <div class="card-info">
+              <div class="card-cat">${p.categoryName || 'General'}</div>
+              <div class="card-title">${p.name}</div>
+              <div class="card-price">${p.price}</div>
+              ${buyBtn}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    init();
+  </script>
+</body>
+</html>
