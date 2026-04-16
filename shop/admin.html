@@ -146,6 +146,7 @@
                     <input type="file" id="fileIn" style="display:none;" onchange="processFile(this)">
                 </div>
                 <div class="fGroup"><label>Product Name</label><input type="text" id="pName"></div>
+                <div class="fGroup"><label>Company Name</label><input type="text" id="pCompanyName" placeholder="e.g., Amable or Afalodge"></div>
                 <div class="fGroup"><label>Price (GH₵)</label><input type="text" id="pPrice"></div>
                 <div class="fGroup"><label>Category</label><select id="pCatSelect"></select></div>
                 <div class="fGroup">
@@ -222,10 +223,9 @@
             document.getElementById('statProducts').innerText = activeProducts.length;
             document.getElementById('statSales').innerText = completedSales.length;
 
-            // Render Inventory (Active only)
             document.getElementById('inventoryList').innerHTML = activeProducts.map(p => `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #eee;">
-                    <div><strong>${p.name}</strong><br><small style="color:#888;">${p.category} • GH₵ ${p.price}</small></div>
+                    <div><strong>${p.name}</strong><br><small style="color:#888;">${p.companyName || 'No Vendor'} • GH₵ ${p.price}</small></div>
                     <div class="action-btns">
                         <button class="sold-link" onclick="markAsSold(${p.id})">Mark Sold</button>
                         <button class="edit-link" onclick="editProduct(${p.id})">Edit</button>
@@ -234,7 +234,6 @@
                 </div>
             `).join('') || "No active stock found.";
 
-            // Render Sales Management Feed
             document.getElementById('salesList').innerHTML = completedSales.map(s => `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #eee; background:#f9fff9;">
                     <div><strong>${s.name}</strong> <span style="font-size:10px; color:green; font-weight:bold;">[SOLD]</span><br>
@@ -243,7 +242,6 @@
                 </div>
             `).join('') || "No recorded sales yet.";
 
-            // Categories
             document.getElementById('catListDisplay').innerHTML = (data.categories || []).map(c => `
                 <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee;">
                     <span>${c.name}</span><button class="del-link" onclick="deleteItem('categories', ${c.id})">Remove</button>
@@ -255,7 +253,7 @@
         }
 
         function markAsSold(id) {
-            if(!confirm("Mark this product as SOLD? It will move to the Sales dashboard.")) return;
+            if(!confirm("Mark this product as SOLD?")) return;
             const idx = window.shop_data.products.findIndex(p => p.id === id);
             const soldItem = window.shop_data.products.splice(idx, 1)[0];
             soldItem.soldAt = Date.now();
@@ -267,9 +265,13 @@
         function openAddModal() {
             editingId = null;
             document.getElementById('modalTitle').innerText = "Add New Product";
-            document.getElementById('pName').value = ""; document.getElementById('pPrice').value = "";
-            document.getElementById('pDesc').value = ""; document.getElementById('pLink').value = "";
-            document.getElementById('pBuyPref').value = "whatsapp"; toggleBuyLink();
+            document.getElementById('pName').value = ""; 
+            document.getElementById('pCompanyName').value = ""; // 2. Clear new field
+            document.getElementById('pPrice').value = "";
+            document.getElementById('pDesc').value = ""; 
+            document.getElementById('pLink').value = "";
+            document.getElementById('pBuyPref').value = "whatsapp"; 
+            toggleBuyLink();
             productImages = [null, null, null];
             [0,1,2].forEach(i => { document.getElementById(`prev${i}`).src = ""; document.getElementById(`prev${i}`).style.display="none"; });
             document.getElementById('productModal').style.display = 'flex';
@@ -295,7 +297,9 @@
             if(!name || validImgs.length === 0) return alert("Missing Name or Image!");
             const prod = {
                 id: editingId || Date.now(),
-                name: name, price: document.getElementById('pPrice').value,
+                name: name, 
+                companyName: document.getElementById('pCompanyName').value, // 2. Save new field
+                price: document.getElementById('pPrice').value,
                 category: document.getElementById('pCatSelect').value,
                 buyPreference: document.getElementById('pBuyPref').value,
                 externalUrl: document.getElementById('pLink').value,
@@ -315,6 +319,7 @@
             const p = window.shop_data.products.find(x => x.id === id);
             document.getElementById('modalTitle').innerText = "Update Product";
             document.getElementById('pName').value = p.name;
+            document.getElementById('pCompanyName').value = p.companyName || ""; // 2. Load new field
             document.getElementById('pPrice').value = p.price;
             document.getElementById('pCatSelect').value = p.category;
             document.getElementById('pBuyPref').value = p.buyPreference || 'whatsapp';
